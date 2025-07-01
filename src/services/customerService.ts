@@ -9,7 +9,7 @@ const CUSTOMERS_API_URL = `${BASE_URL}/customers`
 //async - nawathila inana fuction
   const getAllUser = async () : Promise<Customer[]> =>{
   const response = await apiClient.get(CUSTOMERS_API_URL)
-  return response.data;
+  return response.data;//
 }
 
 
