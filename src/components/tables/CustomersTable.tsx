@@ -43,9 +43,9 @@ const CustomersTable: React.FC<CustomersTableProps> = ({ customers, onEdit, onDe
             </tr>
           ) : (
             customers.map((customer) => (
-              <tr key={customer.id} className="hover:bg-gray-50">
+              <tr key={customer._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {customer.id}
+                  {customer._id}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {customer.name}
@@ -61,15 +61,19 @@ const CustomersTable: React.FC<CustomersTableProps> = ({ customers, onEdit, onDe
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div className="flex space-x-2">
-                    <button
+                   <button
                       onClick={() => onEdit(customer)}
                       className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-100 transition duration-150"
+                      title="Edit customer"
+                      aria-label="Edit customer"
                     >
                       <MdEdit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => onDelete(customer)}
                       className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-100 transition duration-150"
+                      title="Delete customer"
+                      aria-label="Delete customer"
                     >
                       <MdDelete className="w-4 h-4" />
                     </button>

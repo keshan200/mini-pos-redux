@@ -1,18 +1,48 @@
-import React, { useState } from "react"
+import React, { useState,useEffect  } from "react"
 import { MdAdd } from "react-icons/md"
 import Dialog from "../components/Dialog"
 import type { Customer } from "../types/Customer"
 import CustomersTable from "../components/tables/CustomersTable"
 import CustomerForm from "../components/forms/CustomerForm"
 import { customersData } from "../data/data"
+import axios from "axios"
+import toast from 'react-hot-toast';
+import { getAllUser} from "../services/customerService"
 
 const CustomersPage: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>(customersData)
-
+ const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+
+
+
+const fetchData = async ()=>{
+
+    try{
+    setIsLoading(true)
+    const result =  await getAllUser()
+    setCustomers(result)
+    
+    }catch(error){
+       if(axios.isAxiosError(error)){
+        toast.error("error.message")
+    }else{
+        toast.error("somthing went worng")
+    }
+
+    }finally{
+      setIsLoading(false)
+    }
+  }
+
+
+  useEffect(()=>{
+    fetchData()
+
+  },[])
 
   const handleAddCustomer = () => {
     setSelectedCustomer(null)
@@ -29,19 +59,25 @@ const CustomersPage: React.FC = () => {
     setIsDeleteDialogOpen(true)
   }
 
-  const handleFormSubmit = (customerData: Omit<Customer, "id">) => {
+
+
+
+
+  
+
+  const handleFormSubmit = (customerData: Omit<Customer, "_id">) => {
     if (selectedCustomer) {
       // Update existing customer
       setCustomers((prev) =>
         prev.map((customer) =>
-          customer.id === selectedCustomer.id ? { ...customerData, id: selectedCustomer.id } : customer
+          customer._id === selectedCustomer._id ? { ...customerData, _id: selectedCustomer._id } : customer
         )
       )
       setIsEditDialogOpen(false)
-      console.log("Customer updated:", { ...customerData, id: selectedCustomer.id })
+      console.log("Customer updated:", { ...customerData, _id: selectedCustomer._id })
     } else {
       // Add new customer
-      const newCustomer = { ...customerData, id: Date.now() }
+      const newCustomer = { ...customerData, _id: Date.now() }
       setCustomers((prev) => [...prev, newCustomer])
       setIsAddDialogOpen(false)
       console.log("Customer added:", newCustomer)
@@ -51,7 +87,7 @@ const CustomersPage: React.FC = () => {
 
   const confirmDelete = () => {
     if (selectedCustomer) {
-      setCustomers((prev) => prev.filter((customer) => customer.id !== selectedCustomer.id))
+      setCustomers((prev) => prev.filter((customer) => customer._id !== selectedCustomer._id))
       console.log("Customer deleted:", selectedCustomer)
       setIsDeleteDialogOpen(false)
       setSelectedCustomer(null)
@@ -64,6 +100,52 @@ const CustomersPage: React.FC = () => {
     setIsDeleteDialogOpen(false)
     setSelectedCustomer(null)
   }
+
+
+ if (isLoading) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        backgroundColor: '#f5f5f5',
+      }}
+    >
+      <div
+        style={{
+          width: '50px',
+          height: '50px',
+          border: '5px solid #ccc',
+          borderTop: '5px solid rgb(79, 22, 250)',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+        }}
+      ></div>
+      <p
+        style={{
+          marginTop: '20px',
+          fontSize: '18px',
+          color: 'rgb(79, 22, 250)',
+          fontFamily: 'Arial, sans-serif',
+        }}
+      >
+        Loading...
+      </p>
+      <style>
+        {` 
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
+    </div>
+  );
+}
+
 
   return (
     <div className='p-6 bg-gray-100 min-h-screen'>
@@ -126,3 +208,5 @@ const CustomersPage: React.FC = () => {
 }
 
 export default CustomersPage
+
+
